@@ -7,7 +7,6 @@ processing towards a nicely formatted PDF file.
 # from ..starsystem import StarSystem
 from tables import AtmCompAbbr
 
-
 class LatexWriter:
     def __init__(self, starsystem, filename='starsystem.tex'):
         self.starsystem = starsystem

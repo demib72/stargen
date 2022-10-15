@@ -1,5 +1,12 @@
 # This file contains all the tables that will be used in this project.
 
+BlueDwarfTable = {
+    'mass': [0.1, 0.15, 0.2],
+    'type': ['M7','M6','M5'],
+    'temp': [5600, 8400, 6200],
+    'luminosity': [0.11, 0.7, 1.4]
+}
+
 # StEvoTable is the Stellar Evolution Table as per GURPS Space p. 103
 StEvoTable = {
     # The mass in solar masses

@@ -6,8 +6,8 @@ from typing import Tuple, List, Union
 
 class PlanetPremade(WorldPremade):
 
-    def __init__(self, primary):
-        WorldPremade.__init__(self, primary)
+    def __init__(self, primary, orbit=""):
+        WorldPremade.__init__(self, primary, orbit)
         self.nummoons, self.moons = self.generate_moons()
         if self.nummoons == 0:
             self.nummoonlets, self.moonlets = self.generate_moonlets()
@@ -262,3 +262,6 @@ class PlanetPremade(WorldPremade):
             letter = self.primary_star.get_letter()
             name = '{}-{}-{}'.format(letter, number, counter)
             moon.set_name(name)
+
+    def get_atmospheric_mass(self):
+        return self.atmmass

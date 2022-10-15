@@ -5,7 +5,7 @@ from planet import Planet
 from tables import OrbitalSpace
 from planetpremade import PlanetPremade
 
-class PlanetSystem:
+class PreMadePlanetSystem:
     roller = DiceRoller()
     def __init__(self, parentstar) -> None:
         self.parentstar = parentstar
@@ -49,6 +49,11 @@ class PlanetSystem:
             else:
                 print("\t\t{}: {}".format(round(skey, 3), self.orbitcontents[skey]))
 
+    def question(self, question):
+        answer = input(question)
+
+        return answer
+
     def listorbcontentdetails(self):
         for skey in sorted(self.orbitcontents):
             self.orbitcontents[skey].print_info()
@@ -81,17 +86,26 @@ class PlanetSystem:
         return premade, orbit
         
     def make_gasgiant_arrangement(self):
-        dice = self.roller.roll_dice(3, 0)
-        self.gasarrangement = 'None'
-        if dice > 10:
-            self.gasarrangement = 'Conventional'
-        if dice > 12:
-            self.gasarrangement = 'Eccentric'
-        if dice > 14:
-            self.gasarrangement = 'Epistellar'
-        if self.forbidden:
-            if self.snowline > self.innerforbidden and self.snowline < self.outerforbidden:
-                self.gasarrangement = 'None'
+        user = self.question("Do you want to randomly determine Gas Giant Arrangement? [Y/N]: ")
+
+        if user == "Y":
+            dice = self.roller.roll_dice(3, 0)
+            self.gasarrangement = 'None'
+            if dice > 10:
+                self.gasarrangement = 'Conventional'
+            if dice > 12:
+                self.gasarrangement = 'Eccentric'
+            if dice > 14:
+                self.gasarrangement = 'Epistellar'
+            if self.forbidden:
+                if self.snowline > self.innerforbidden and self.snowline < self.outerforbidden:
+                    self.gasarrangement = 'None'
+        else:
+            if self.forbidden:
+                if self.snowline > self.innerforbidden and self.snowline < self.outerforbidden:
+                    self.gasarrangement = 'None'
+            else:
+                self.gasarrangement = self.question("What is the arrangement? [None, Conventional, Eccentric, or Epistellar]: ")
 
     def place_first_gasgiant(self):
         orbit = 0
@@ -279,20 +293,25 @@ class PlanetSystem:
         roll_orbits.sort()
         # Go through these orbits and determine the contents
         for orbit in roll_orbits:
-            roll_mod = self.orbit_fill_modifier(self.orbitarray.index(orbit))
-            dice_roll = self.roller.roll_dice(3, roll_mod)
-            if 4 <= dice_roll <= 6:
-                obj = AsteroidBelt(self.parentstar, orbit)
-            if 7 <= dice_roll <= 8:
-                obj = Planet(self.parentstar, orbit, "Tiny")
-            if 9 <= dice_roll <= 11:
-                obj = Planet(self.parentstar, orbit, "Small")
-            if 12 <= dice_roll <= 15:
-                obj = Planet(self.parentstar, orbit, "Standard")
-            if dice_roll >= 16:
-                obj = Planet(self.parentstar, orbit, "Large")
-            if not dice_roll <= 3:
-                self.orbitcontents[orbit] = obj
+            user = self.question("Do you want to randomly determine world?[Y/N]: ")
+
+            if user == "Y":
+                roll_mod = self.orbit_fill_modifier(self.orbitarray.index(orbit))
+                dice_roll = self.roller.roll_dice(3, roll_mod)
+                if 4 <= dice_roll <= 6:
+                    obj = AsteroidBelt(self.parentstar, orbit)
+                if 7 <= dice_roll <= 8:
+                    obj = Planet(self.parentstar, orbit, "Tiny")
+                if 9 <= dice_roll <= 11:
+                    obj = Planet(self.parentstar, orbit, "Small")
+                if 12 <= dice_roll <= 15:
+                    obj = Planet(self.parentstar, orbit, "Standard")
+                if dice_roll >= 16:
+                    obj = Planet(self.parentstar, orbit, "Large")
+                if not dice_roll <= 3:
+                    self.orbitcontents[orbit] = obj
+            else:
+                obj = PlanetPremade(self.parentstar, orbit)
         # Now remove all orbits that still have None as content
         orc = {k: v for k, v in self.orbitcontents.items() if v != None}
         self.orbitcontents = orc

@@ -96,12 +96,12 @@ class StarSystem:
                 provage = self.random_age()
             return provage
 
-        elif age <= 0:
+        elif float(age) <= 0.0:
             raise ValueError(
                 "Starsystem age needs to be larger than zero billion years."
             )
         else:
-            return age
+            return float(age)
 
     def random_age(self) -> float:
         """
@@ -336,6 +336,7 @@ class StarSystem:
             ouput is written
         :type filename: str
         """
+        
         writer = LatexWriter(self, filename)
         writer.write()
 

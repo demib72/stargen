@@ -1,6 +1,8 @@
+from re import X
 from dice import DiceRoller
 from planetsystem import PlanetSystem
-from tables import StEvoTable, SequenceTable, find_solar_mass
+from premadeplanetsystem import PreMadePlanetSystem
+from tables import StEvoTable, SequenceTable, find_solar_mass, BlueDwarfTable
 
 class Star:
     roller = DiceRoller()
@@ -61,7 +63,7 @@ class Star:
             mass = find_solar_mass(first_roll, second_roll)
 
         else:
-            mass = user
+            mass = float(user)
 
         seq_index = StEvoTable['mass'].index(mass)
         seq = StEvoTable['internaltype'][seq_index]
@@ -90,14 +92,24 @@ class Star:
         if sequence_index == 3:  # The star is a white dwarf, and its mass is treated specially
             mass =  self.roller.roll_dice(2, -2) * 0.05 + 0.9
 
-        #temp
-        temp = self.make_temperature(sequence_index, seq_index)
-        #luminosity
-        luminosity = self.make_luminosity(sequence_index, seq_index)
-        #radius
-        radius = self.make_radius(sequence_index, luminosity, temp)
+        if mass < 0.25:
+            blue_dwarf = self.question("Is this a blue dwarf? [Y/N]: ")
 
-        return seq_index, mass, sequence_type, temp, luminosity, radius
+        if blue_dwarf == "Y":
+            starting_temp = self.make_temperature(sequence_index, seq_index)
+            starting_luminosity = self.make_luminosity(sequence_index, seq_index)
+
+            blue_temp = BlueDwarfTable['temp'][seq_index]
+            blue_luminosity = BlueDwarfTable['luminosity'][seq_index]
+            radius = self.make_radius(sequence_index, starting_luminosity, starting_temp)
+
+            return seq_index, mass, sequence_type, blue_temp, blue_luminosity, radius
+        else:
+            temp = self.make_temperature(sequence_index, seq_index)
+            luminosity = self.make_luminosity(sequence_index, seq_index)
+            radius = self.make_radius(sequence_index, luminosity, temp)
+
+            return seq_index, mass, sequence_type, temp, luminosity, radius
 
     def make_luminosity(self, SeqIndex, StEvoIndex):
         seq = SeqIndex
@@ -176,10 +188,6 @@ class Star:
         self.forbiddenzone = (inner, outer)
         self.hasforbiddenzone = True
 
-    def make_planetsystem(self):
-        # TODO: Why not call this in the constructor and avoid this side effect too?
-        self.planetsystem = PlanetSystem(self)
-
     def get_star_type(self) -> str:
         """
         Get the star spectral type by the star temperature
@@ -191,13 +199,24 @@ class Star:
 
     def make_planetsystem(self):
         # TODO: Why not call this in the constructor and avoid this side effect too?
-        self.planetsystem = PlanetSystem(self)
+        user = self.question("Do you want to make a fully customized star system? [Y/N]: ")
+        
+        if user == "N":
+            self.planetsystem = PlanetSystem(self)
+        else:
+            self.planetsystem = PreMadePlanetSystem(self)
 
     def get_mass(self) -> float:
         return self.mass
 
     def get_age(self):
         return self.age
+
+    def get_sequence(self) -> str:
+        return self.sequence
+
+    def get_temp(self) -> str:
+        return self.temperature
 
     def get_orbit_limits(self):
         return self.innerlimit, self.outerlimit

@@ -6,7 +6,7 @@ from tables import garden_worlds, barren_worlds, hostile_worlds, MAtmoTable, Tem
 class WorldPremade(OrbitContent):
     roller = DiceRoller()
 
-    def __init__(self, parentstar):
+    def __init__(self, parentstar, orbit):
         self.parentstar = parentstar
         self.world_size = None
         self.world_type = None
@@ -16,7 +16,7 @@ class WorldPremade(OrbitContent):
         self.average_surface_temp = self.generate_average_surface_temp()
         self.world_climate = world_climate(self.average_surface_temp)
         self.blackbodytemp = self.generate_blackbody()
-        self.orbit = (77300 / self.blackbodytemp ** 2) * sqrt(self.parentstar.luminosity)
+        self.orbit = self.create_orbit(orbit)
         OrbitContent.__init__(self, parentstar, self.orbit)
         self.density = self.make_density()
         self.diameter = self.make_diameter()
@@ -62,6 +62,13 @@ class WorldPremade(OrbitContent):
 
     def type(self):
         return self.world_type
+
+    def create_orbit(self, orbit):
+        print(f"Orbit it {orbit} AU")
+        if orbit == "":
+            orbit = (77300 / self.blackbodytemp ** 2) * sqrt(self.parentstar.luminosity)
+            
+        return orbit
 
     def generate_world_type(self):
         user_answer = self.question("What is this world's type? [world type or random]: ")
@@ -188,7 +195,7 @@ class WorldPremade(OrbitContent):
 
             return hydro
         else:
-            return percentage
+            return float(percentage)
 
     def get_hydrographic_cover(self):
         return self.hydro
