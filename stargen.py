@@ -51,7 +51,7 @@ class StarSystem:
         """
         f
         """
-        open_cluster = self.question("Is the star system in an open cluster? [True/False/Random]: ")
+        open_cluster = self.question("Is the star system in an open cluster? [True/False/random]: ")
 
         if open_cluster == "True":
             return True
