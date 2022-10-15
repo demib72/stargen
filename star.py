@@ -95,15 +95,21 @@ class Star:
         if mass < 0.25:
             blue_dwarf = self.question("Is this a blue dwarf? [Y/N]: ")
 
-        if blue_dwarf == "Y":
-            starting_temp = self.make_temperature(sequence_index, seq_index)
-            starting_luminosity = self.make_luminosity(sequence_index, seq_index)
+            if blue_dwarf == "Y":
+                starting_temp = self.make_temperature(sequence_index, seq_index)
+                starting_luminosity = self.make_luminosity(sequence_index, seq_index)
 
-            blue_temp = BlueDwarfTable['temp'][seq_index]
-            blue_luminosity = BlueDwarfTable['luminosity'][seq_index]
-            radius = self.make_radius(sequence_index, starting_luminosity, starting_temp)
+                blue_temp = BlueDwarfTable['temp'][seq_index]
+                blue_luminosity = BlueDwarfTable['luminosity'][seq_index]
+                radius = self.make_radius(sequence_index, starting_luminosity, starting_temp)
 
-            return seq_index, mass, sequence_type, blue_temp, blue_luminosity, radius
+                return seq_index, mass, sequence_type, blue_temp, blue_luminosity, radius
+            else:
+                temp = self.make_temperature(sequence_index, seq_index)
+                luminosity = self.make_luminosity(sequence_index, seq_index)
+                radius = self.make_radius(sequence_index, luminosity, temp)
+
+                return seq_index, mass, sequence_type, temp, luminosity, radius
         else:
             temp = self.make_temperature(sequence_index, seq_index)
             luminosity = self.make_luminosity(sequence_index, seq_index)
